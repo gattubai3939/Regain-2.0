@@ -1,11 +1,12 @@
 # Regain 2.0
 Distraction blocker + focus app for students (Android, Kotlin + Jetpack Compose).
 
-## Phase 1 (this commit)
-- 3-tab navigation (Focus / Schedule / Blocks), dark theme
-- Usage Access permission flow
-- Today's screen time, app-wise list
-- Distracting / Productive / Half & Half / Others classification (saved in Room)
+## Phase 1
+- 3-tab navigation, dark theme, Usage Access flow
+- Today's screen time, app-wise list, Distracting / Productive / Half & Half / Others
 
-## Build
-Push to GitHub -> Actions tab -> "Build APK" -> download artifact `regain-2.0-debug-apk`.
+## Phase 2
+- Unlock + pickup count (Focus tab)
+- Blocks tab: per-app full block, daily limit, 10-second pause screen
+- Emergency unlock: 2-minute wait or typing challenge (5 min access)
+- Needs Accessibility permission (GuardService)

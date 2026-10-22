@@ -1,8 +1,10 @@
 package com.regain2.app.data
 
 import android.app.AppOpsManager
+import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Process
 import java.util.Calendar
@@ -65,5 +67,45 @@ class UsageRepository(private val context: Context) {
             AppCategory.OTHERS -> o += a.millis
         }
         return UsageSummary(d + p + o, d, p, o, apps)
+    }
+
+    private fun startOfToday(): Long = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+    }.timeInMillis
+
+    /** Foreground time of one app today, including the session that is running right now. */
+    @Suppress("DEPRECATION")
+    fun usageMillisToday(pkg: String): Long {
+        val usm = context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+        val now = System.currentTimeMillis()
+        val events = usm.queryEvents(startOfToday(), now)
+        val e = UsageEvents.Event()
+        var total = 0L
+        var fgStart = -1L
+        while (events.hasNextEvent()) {
+            events.getNextEvent(e)
+            if (e.packageName != pkg) continue
+            when (e.eventType) {
+                UsageEvents.Event.MOVE_TO_FOREGROUND -> fgStart = e.timeStamp
+                UsageEvents.Event.MOVE_TO_BACKGROUND -> if (fgStart >= 0) {
+                    total += e.timeStamp - fgStart
+                    fgStart = -1L
+                }
+            }
+        }
+        if (fgStart >= 0) total += now - fgStart
+        return total
+    }
+
+    /** (packageName, label) of every launchable app except ourselves. */
+    fun launcherApps(): List<Pair<String, String>> {
+        val pm = context.packageManager
+        val i = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+        return pm.queryIntentActivities(i, 0)
+            .map { it.activityInfo.packageName to it.loadLabel(pm).toString() }
+            .distinctBy { it.first }
+            .filter { it.first != context.packageName }
+            .sortedBy { it.second.lowercase() }
     }
 }

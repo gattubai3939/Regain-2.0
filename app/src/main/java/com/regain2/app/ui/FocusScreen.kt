@@ -39,6 +39,8 @@ fun AppCategory.color(): Color = when (this) {
 fun FocusScreen(vm: MainViewModel) {
     val granted by vm.hasPermission.collectAsState()
     val summary by vm.summary.collectAsState()
+    val unlocks by vm.unlocks.collectAsState()
+    val pickups by vm.pickups.collectAsState()
     val ctx = LocalContext.current
     var selected by remember { mutableStateOf<AppUsage?>(null) }
 
@@ -70,6 +72,11 @@ fun FocusScreen(vm: MainViewModel) {
                 Legend("Distracting", fmt(summary.distractingMillis), Orange)
                 Legend("Productive", fmt(summary.productiveMillis), Green)
                 Legend("Others", fmt(summary.othersMillis), Grey)
+            }
+            Spacer(Modifier.height(16.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                StatCard("Unlocks", unlocks.toString(), Modifier.weight(1f))
+                StatCard("Pickups", pickups.toString(), Modifier.weight(1f))
             }
             Spacer(Modifier.height(20.dp))
             Text("Apps (tap to change category)", color = Grey)
@@ -139,5 +146,15 @@ private fun AppRow(app: AppUsage, onClick: () -> Unit) {
             Text(app.category.label, color = app.category.color(), style = MaterialTheme.typography.bodySmall)
         }
         Text(fmt(app.millis), color = Grey)
+    }
+}
+
+@Composable
+private fun StatCard(title: String, value: String, modifier: Modifier = Modifier) {
+    Column(
+        modifier.clip(RoundedCornerShape(16.dp)).background(Surface1).padding(16.dp)
+    ) {
+        Text(title, color = Grey, style = MaterialTheme.typography.bodySmall)
+        Text(value, style = MaterialTheme.typography.headlineMedium)
     }
 }

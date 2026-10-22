@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Regain 2.0</string>
+    <string name="accessibility_description">Regain 2.0 sirf ye dekhta hai ki kaunsa app khula hai, taaki aapke set kiye hue limit, block aur pause screen lag sakein. Koi data phone se bahar nahi jata.</string>
 </resources>

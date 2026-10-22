@@ -47,7 +47,7 @@ fun MainScreen(vm: MainViewModel) {
             when (tab) {
                 Tab.FOCUS -> FocusScreen(vm)
                 Tab.SCHEDULE -> Placeholder("Schedule", "Study schedules & reminders (Phase 4)")
-                Tab.BLOCKS -> Placeholder("Blocks", "App limits, pause screen, full block (Phase 2)")
+                Tab.BLOCKS -> BlocksScreen(vm)
             }
         }
     }
